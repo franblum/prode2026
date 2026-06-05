@@ -9,6 +9,7 @@ CREATE TABLE perfiles (
     id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
     nombre_usuario TEXT NOT NULL,
     puntos_totales INTEGER DEFAULT 0,
+    es_admin BOOLEAN DEFAULT FALSE,
     creado_el TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 

@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { initAdminPanel, showAdminPanel } from './admin.js';
 
 // State variables
 let currentUser = null;
@@ -92,6 +93,7 @@ const usernameGroup = document.getElementById('username-group');
 const userDisplayName = document.getElementById('user-display-name');
 const userDisplayPoints = document.getElementById('user-display-points');
 const logoutBtn = document.getElementById('logout-btn');
+const adminNavBtn = document.getElementById('admin-nav-btn');
 const matchesList = document.getElementById('matches-list');
 const leaderboardList = document.getElementById('leaderboard-list');
 
@@ -204,7 +206,8 @@ const fetchUserProfile = async () => {
       currentProfile = {
         id: currentUser.id,
         nombre_usuario: currentUser.user_metadata?.username || 'Jugador Anónimo',
-        puntos_totales: 0
+        puntos_totales: 0,
+        es_admin: false
       };
     } else {
       currentProfile = data;
@@ -212,6 +215,12 @@ const fetchUserProfile = async () => {
     
     userDisplayName.textContent = currentProfile.nombre_usuario;
     userDisplayPoints.textContent = `${currentProfile.puntos_totales} pts`;
+
+    if (currentProfile.es_admin) {
+      adminNavBtn.classList.remove('hidden');
+    } else {
+      adminNavBtn.classList.add('hidden');
+    }
   } catch (err) {
     console.error('Error al cargar perfil:', err);
   }
@@ -560,3 +569,7 @@ const initParticles = () => {
 
 // Init particles on load
 initParticles();
+
+// Bind Admin Panel logic
+initAdminPanel(loadDashboardData);
+adminNavBtn.addEventListener('click', showAdminPanel);
