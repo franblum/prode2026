@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Prode Mundial - Torneo de Pronósticos. Demuestra tus conocimientos futbolísticos." />
+    <title>Prode Mundial 🏆 – Torneo de Pronósticos</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Background Elements -->
+    <canvas id="particles-canvas" class="particles-bg"></canvas>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-noise"></div>
+
+    <!-- NOTIFICACIONES -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- SECCIÓN 1: PANTALLA DE INGRESO / AUTENTICACIÓN -->
+    <div id="auth-screen" class="auth-container">
+      <div class="auth-card glassmorphism">
+        <div class="auth-header">
+          <div class="logo-badge pulse-glow">
+            <i class="fa-solid fa-trophy text-gold"></i>
+          </div>
+          <h1>Prode Mundial</h1>
+          <p id="auth-subtitle">Crea tu cuenta o inicia sesión para pronosticar</p>
+        </div>
+        
+        <form id="auth-form" class="auth-form">
+          <div class="form-group" id="username-group">
+            <label for="auth-username"><i class="fa-solid fa-user text-primary"></i> Nombre de Usuario</label>
+            <input type="text" id="auth-username" placeholder="Ej: golazo10" required />
+          </div>
+
+          <div class="form-group">
+            <label for="auth-email"><i class="fa-solid fa-envelope text-primary"></i> Correo Electrónico</label>
+            <input type="email" id="auth-email" placeholder="tu@correo.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="auth-password"><i class="fa-solid fa-lock text-primary"></i> Contraseña</label>
+            <input type="password" id="auth-password" placeholder="Mínimo 6 caracteres" required />
+          </div>
+
+          <button type="submit" id="auth-submit-btn" class="btn btn-primary btn-block btn-shimmer">
+            <span>Registrarse</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          <p id="auth-switch-text">¿Ya tenés una cuenta? <a href="#" id="auth-toggle-link">Iniciá Sesión</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: DASHBOARD PRINCIPAL -->
+    <div id="dashboard-screen" class="dashboard-container hidden">
+      <!-- Navbar -->
+      <header class="navbar glassmorphism">
+        <div class="container nav-container">
+          <div class="logo">
+            <div class="logo-icon-wrapper pulse-glow-sm">
+              <i class="fa-solid fa-trophy text-gold"></i>
+            </div>
+            <span class="logo-text gradient-text">Prode Mundial</span>
+          </div>
+
+          <div class="user-pill-container">
+            <div class="user-badge glassmorphism hover-lift">
+              <div class="avatar-wrapper">
+                <i class="fa-solid fa-user-astronaut user-avatar"></i>
+              </div>
+              <div class="user-details">
+                <span id="user-display-name" class="username-text">Jugador</span>
+                <span id="user-display-points" class="points-text">0 pts</span>
+              </div>
+            </div>
+
+            <button id="logout-btn" class="btn btn-icon btn-danger-outline hover-lift" title="Cerrar Sesión">
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Layout Grid -->
+      <main class="container main-grid">
+        
+        <!-- Columna Izquierda: Pronósticos y Partidos -->
+        <section class="matches-section">
+          <div class="section-card glassmorphism">
+            <div class="section-header">
+              <div class="section-title">
+                <h2><i class="fa-solid fa-futbol text-green float-anim"></i> Partidos del Torneo</h2>
+                <p>Ingresá tus predicciones. Los puntos se calculan al finalizar cada partido.</p>
+              </div>
+              <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">Todos</button>
+                <button class="tab-btn" data-filter="PENDIENTE">Pendientes</button>
+                <button class="tab-btn" data-filter="FINALIZADO">Finalizados</button>
+              </div>
+            </div>
+
+            <div id="matches-list" class="matches-list">
+              <!-- Cargando partidos... -->
+              <div class="loader-container">
+                <div class="spinner"></div>
+                <p>Cargando partidos...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Columna Derecha: Ranking y Reglas -->
+        <section class="sidebar-section">
+          <!-- Ranking de Usuarios -->
+          <div class="section-card glassmorphism mb-4">
+            <div class="section-header border-bottom">
+              <h3><i class="fa-solid fa-ranking-star text-gold float-anim"></i> Tabla de Posiciones</h3>
+            </div>
+            <div id="leaderboard-list" class="leaderboard-list">
+              <!-- Cargando tabla de posiciones... -->
+              <div class="loader-container">
+                <div class="spinner"></div>
+                <p>Cargando ranking...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reglas de Puntuación -->
+          <div class="section-card glassmorphism rules-card">
+            <div class="section-header border-bottom">
+              <h3><i class="fa-solid fa-circle-info text-blue"></i> Sistema de Puntos</h3>
+            </div>
+            <ul class="rules-list">
+              <li class="rule-item">
+                <div class="rule-points bg-gold-gradient">+10</div>
+                <div class="rule-desc">
+                  <strong>Resultado Exacto</strong>
+                  <span>Acertar la cantidad de goles exacta de ambos equipos.</span>
+                </div>
+              </li>
+              <li class="rule-item">
+                <div class="rule-points bg-green-gradient">+5</div>
+                <div class="rule-desc">
+                  <strong>Tendencia del Partido</strong>
+                  <span>Acertar quién gana o si hay empate.</span>
+                </div>
+              </li>
+              <li class="rule-item">
+                <div class="rule-points bg-purple-gradient">+2</div>
+                <div class="rule-desc">
+                  <strong>Tarjeta Roja</strong>
+                  <span>Acertar si hay al menos una expulsión.</span>
+                </div>
+              </li>
+              <li class="rule-item">
+                <div class="rule-points bg-blue-gradient">+2</div>
+                <div class="rule-desc">
+                  <strong>Penal Sancionado</strong>
+                  <span>Acertar si se sanciona y cobra penal.</span>
+                </div>
+              </li>
+              <li class="rule-item">
+                <div class="rule-joker bg-pink-gradient"><i class="fa-solid fa-star"></i> x2</div>
+                <div class="rule-desc">
+                  <strong>Comodín (Joker)</strong>
+                  <span>¡Duplica la puntuación obtenida en el partido elegido!</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+      </main>
+      
+      <footer class="main-footer mt-5 text-center text-muted pb-4">
+        <p><small>&copy; 2026 Prode Mundial. Proyecto de Predicciones Deportivas.</small></p>
+      </footer>
+    </div>
+
+    <!-- Confetti container -->
+    <div id="confetti-container" class="confetti-container"></div>
+
+    <!-- Modulo de Javascript de entrada -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
