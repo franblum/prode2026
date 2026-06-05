@@ -71,15 +71,6 @@ RETURNS TRIGGER AS $$
 DECLARE
     rec_pronostico RECORD;
     puntos INT;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- (Reemplazar la función con la lógica real de puntuación)
-CREATE OR REPLACE FUNCTION calcular_puntos_partido()
-RETURNS TRIGGER AS $$
-DECLARE
-    rec_pronostico RECORD;
-    puntos INT;
 BEGIN
     -- Solo se ejecuta si el partido pasa a estar FINALIZADO
     IF NEW.estado = 'FINALIZADO' AND OLD.estado != 'FINALIZADO' THEN
