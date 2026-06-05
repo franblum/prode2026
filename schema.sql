@@ -147,3 +147,55 @@ INSERT INTO partidos (equipo_a, equipo_b, fecha_hora, estado) VALUES
 ('Inglaterra', 'Croacia', '2026-06-17 17:00:00+00', 'PENDIENTE'),
 ('Portugal', 'RD Congo', '2026-06-17 21:00:00+00', 'PENDIENTE')
 ON CONFLICT DO NOTHING;
+
+
+-- ==========================================
+-- 8. POLÍTICAS DE SEGURIDAD (RLS)
+-- Protege las tablas de lecturas/escrituras maliciosas
+-- ==========================================
+
+-- Habilitar RLS en las tablas
+ALTER TABLE perfiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE partidos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pronosticos ENABLE ROW LEVEL SECURITY;
+
+-- --- POLÍTICAS PARA LA TABLA PERFILES ---
+-- Permitir que cualquiera pueda ver los perfiles (necesario para la tabla de posiciones/leaderboard)
+CREATE POLICY "Permitir lectura pública de perfiles" 
+ON perfiles FOR SELECT 
+USING (true);
+
+-- Permitir que un usuario actualice únicamente su propio perfil (ej. cambiar nombre)
+CREATE POLICY "Permitir actualizar propio perfil" 
+ON perfiles FOR UPDATE 
+USING (auth.uid() = id);
+
+-- --- POLÍTICAS PARA LA TABLA PARTIDOS ---
+-- Permitir que cualquiera pueda ver los partidos
+CREATE POLICY "Permitir lectura pública de partidos" 
+ON partidos FOR SELECT 
+USING (true);
+
+-- Permitir que los administradores tengan control total (crear, editar, eliminar)
+CREATE POLICY "Permitir control de partidos solo a administradores" 
+ON partidos FOR ALL 
+USING (
+    auth.uid() IN (SELECT id FROM perfiles WHERE es_admin = true)
+);
+
+-- --- POLÍTICAS PARA LA TABLA PRONÓSTICOS ---
+-- Permitir que un usuario vea únicamente sus propios pronósticos
+CREATE POLICY "Permitir lectura de pronósticos propios" 
+ON pronosticos FOR SELECT 
+USING (auth.uid() = usuario_id);
+
+-- Permitir que un usuario cree sus propios pronósticos
+CREATE POLICY "Permitir insertar pronósticos propios" 
+ON pronosticos FOR INSERT 
+WITH CHECK (auth.uid() = usuario_id);
+
+-- Permitir que un usuario actualice únicamente sus propios pronósticos
+CREATE POLICY "Permitir actualizar pronósticos propios" 
+ON pronosticos FOR UPDATE 
+USING (auth.uid() = usuario_id);
+
